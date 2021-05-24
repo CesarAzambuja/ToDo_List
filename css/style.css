@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    width: 100%;
+    height: 100vh;
+    background: #bdc3c7;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #2c3e50, #bdc3c7);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #2c3e50, #bdc3c7); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    font-family: 'Lato';
+}
+
+.login{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30vh;
+}
+
+.login h2{
+    margin-bottom: 3rem;
+    color: #f2f2f2;
+    text-transform: uppercase;
+}
+
+.login-form{
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form input{
+    padding: .7rem;
+    border: 0;
+    margin-bottom: .8rem;
+    border-radius: 2.5rem;
+}
+
+ input[type=submit]{
+    margin: 1rem auto;
+    width: 50%;
+    padding: .6rem;
+    background-color: rgb(46, 52, 63);
+    color: #f2f2f2;
+    font-weight: 600;
+    transition: all 500ms;
+    cursor: pointer;
+}
+
+ input[type=submit]:hover{
+    background-color: #f2f2f2;
+    color: rgb(46, 52, 63);
+    transition: all 600ms;
+}
+
+.links{
+    display: flex;
+    justify-content: space-between;
+}
+
+.links a{
+    color: #a8a5a5;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.links a:hover{
+    color: rgb(46,52,63);
+}
+
+.container-login{
+    display: none;
+    margin: 0 auto;
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+    padding: 2rem;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.container-login h2{
+    margin-bottom: 2rem;
+    color: #f2f2f2;
+    font-size: 2rem;
+}
+
+.container-login h2 a{
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 18px;
+    position: relative;
+    top: 0;
+    left: 50px;
+}
+
+.form-cadastro-tarefa{
+    display: flex;
+    flex-direction: column;
+}
+
+.form-cadastro-tarefa textarea{
+    width: 80%;
+    height: 4.5rem;
+    border: 0;
+    padding: 8px;
+    margin-bottom: 1rem;
+}
+
+.form-cadastro-tarefa label{
+    text-align: left;
+    color: #f2f2f2;
+    margin-bottom: 3px;
+    margin-left: 8px;
+}
+
+.form-cadastro-tarefa input{
+    width: 32%;
+    display: inline-block;
+    padding: .6rem;
+    border: 0;
+    margin-bottom: .5rem;
+    border-radius: 2.5rem;
+}
+
+.btn-adicionar{
+    align-items:flex-start;
+    justify-content: left;
+}
+.tarefas-usuario{
+    margin: 2rem auto;
+    display: none;
+    /*background-color: #fff;*/
+    width: 90%;
+    max-width: 800px;
+}
+
+.tarefas-usuario h3{
+    margin-bottom: 2rem;
+    color: #f2f2f2;
+    font-size: 1.7rem;   
+}
+
+.tarefas-usuario ul li{
+    list-style: none;
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed #c2c2c2;
+    padding: .5rem;
+}
+
+li.tarefa-concluida{
+    color: #c2c2c2;
+    text-decoration: line-through;
+}
+
+.buttons{
+    text-decoration: none;
+}
+
+
+

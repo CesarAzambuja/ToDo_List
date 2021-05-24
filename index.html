@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Projeto ToDo</title>
+</head>
+<body>
+
+    <div class="login">
+        <h2>Login</h2>
+        <form class="login-form">
+            <input type="email" name="email" placeholder=" * E-mail"/>
+            <input type="password" name="password" placeholder="* Senha"/>
+            <input type="submit" value="Acessar">
+            <div class="links">
+                <a href="#">Novo usuário</a>
+                <a href="#">Esqueci minha senha</a>
+            </div>
+        </form>
+    </div><!--login-->
+
+    <div class="container-login">
+        <h2>Tasks By Azambuja <a class="logout" href="javascript:void(0);">Sair</a></h2>
+        <form class="form-cadastro-tarefa">
+            <textarea name="tarefa"></textarea>
+            <label for="dateTime">Previsão</label>
+            <input type="datetime-local" name="datetime">
+            <input type="submit" value="Adicionar tarefa" name="acao" class="btn-adicionar">    
+        </form>
+    </div><!--container-login-->
+
+    <div class="tarefas-usuario">
+        <h3>Minhas Tarefas</h3>
+        <ul id="tarefas">
+
+        </ul>
+
+    </div><!--tarefas-usuario-->
+    
+
+<script src="https://www.gstatic.com/firebasejs/8.6.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+<script>
+    // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyA7rxqi-63N45yZk1RITearC86b6uhUyk4",
+    authDomain: "tasks-by-azambuja.firebaseapp.com",
+    projectId: "tasks-by-azambuja",
+    storageBucket: "tasks-by-azambuja.appspot.com",
+    messagingSenderId: "968853176459",
+    appId: "1:968853176459:web:daf552671b407d3ebad48e"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+   //começamos aqui
+
+   var usuario = null;
+  var formLogin = document.querySelector('form.login-form');
+  var btnLogout = document.querySelector('.logout');
+
+  formLogin.addEventListener('submit',(e) =>{
+      e.preventDefault();
+      let email = document.querySelector('[name=email]').value;
+      let password = document.querySelector('[name=password]').value;
+       
+
+        firebase.auth().signInWithEmailAndPassword(email,password)
+        .then((userCredential) =>{
+        // Signed in
+        usuario = userCredential.user;
+        //alert('Logado com Sucesso como: ' +usuario.email);
+        document.querySelector('.login').style.display = 'none';
+        document.querySelector('.container-login').style.display = 'block';
+        document.querySelector('.tarefas-usuario').style.display = 'block';
+
+        formLogin.reset();
+        // ...
+        })
+        .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        alert(errorMessage);
+        })
+  });
+
+  const db = firebase.firestore();
+
+  firebase.auth().onAuthStateChanged((val)=>{
+
+    if(val){
+        usuario = val;
+        //alert('Bem vindo de volta ' + usuario.email);
+
+        document.querySelector('.login').style.display = 'none';
+        document.querySelector('.container-login').style.display = 'block';
+
+        //Ouvir mudanças no banco para popular tarefas do usuário
+
+        db.collection('tarefas').where("data", "!=", null).onSnapshot((data) => {
+            let list = document.querySelector('#tarefas');
+            list.innerHTML = '';
+            let tarefas = data.docs;
+            
+            tarefas = tarefas.sort(function(a,b){
+                if(a.data().data < a.data().data)
+                    return -1;
+                else
+                    return +1;
+            })
+
+            tarefas.map((val)=>{
+                list.innerHTML+=`<li class="tarefa-concluida"> ${val.data().tarefa} <div class="buttons"style="text-decoration: none"> <a tarefa-id="${val.id}"class="concluir-btn" href="javascript:void(0)">(flag)</a><a tarefa-id="${val.id}"class="excluir-btn" href="javascript:void(0)">(X)</a></div></li>`
+            })
+
+            var excluirTarefa = document.querySelectorAll('.excluir-btn');
+            
+
+            excluirTarefa.forEach(element =>{
+                element.addEventListener('click', function(e){
+                    e.preventDefault();
+                    let = docId = element.getAttribute('tarefa-id')
+
+                    db.collection('tarefas').doc(docId).delete();
+                })
+            })
+ 
+        })
+    }
+  })
+
+
+
+
+
+
+    btnLogout.addEventListener('click',(e)=>{
+     e.preventDefault();
+
+        firebase.auth().signOut().then(() => {
+            usuario = null;
+            document.querySelector('.login').style.display = 'block';
+            document.querySelector('.container-login').style.display = 'none';
+            alert('Deslogado');
+        }).catch((error) => {
+            alert('Erro ao Deslogar');
+        });
+    })
+
+    var formCadastro = document.querySelector('.form-cadastro-tarefa');
+
+
+
+    formCadastro.addEventListener('submit', (e)=>{
+        e.preventDefault();
+
+    
+        let tarefa = document.querySelector('.form-cadastro-tarefa [name=tarefa]').value;
+        let dateTime = document.querySelector('.form-cadastro-tarefa [name=datetime]').value;
+        let dataAtual = new Date().getTime();
+
+        if(dataAtual > new Date(dateTime).getTime()){
+            alert('A data informada é anterior a data atual, gentileza informar uma data valida.');
+        }else if(tarefa == "" || dateTime == ""){
+            alert('Existe campos em branco!');
+        }else{
+            //Cliando coleção caso não exista e incluindo dados
+            db.collection('tarefas').add({
+                tarefa: tarefa,
+                data:  new Date(dateTime).getTime(),
+                idUsuario: usuario.uid
+            })
+            formCadastro.reset();
+            alert('Tarafa cadastrada com sucesso!')
+        }
+    });
+
+   /* var concluirTarefa = document.querySelector('.concluir-btn');
+            concluirTarefa.forEach(element =>{
+                element.addEventListener('click', function(e){
+                    e.preventDefault();
+                    let = docId = element.getAttribute('tarefa-id')
+                    let concluida = document.querySelector('.tarefas-usuario ul li')
+                    concluida.doc(docId).classList.toggle('.tarefas-concluida');
+                })
+            })*/
+
+</script>
+
+    
+</body>
+</html>
